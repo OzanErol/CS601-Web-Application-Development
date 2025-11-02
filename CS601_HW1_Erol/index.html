@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+  <title>Interactive Subscription Form</title>
+
+  <!-- =========================
+       BASIC STYLESHEET SECTION
+  ========================== -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f8f8;
+      margin: 40px;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 420px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-top: 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.9em;
+    }
+
+    #result {
+      margin-top: 25px;
+      padding: 15px;
+      border-radius: 6px;
+      background-color: #e9ffe9;
+      border: 1px solid #7ac27a;
+      display: none; /* hidden until success */
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Newsletter Subscription</h2>
+
+  <!-- =========================
+       FORM SECTION
+  ========================== -->
+  <form id="subscriptionForm">
+    <!-- First Name -->
+    <label for="firstName">First Name:</label>
+    <input type="text" id="firstName" name="firstName">
+    <span id="firstNameError" class="error"></span>
+
+    <!-- Last Name -->
+    <label for="lastName">Last Name:</label>
+    <input type="text" id="lastName" name="lastName">
+    <span id="lastNameError" class="error"></span>
+
+    <!-- Email -->
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email">
+    <span id="emailError" class="error"></span>
+
+    <!-- Package -->
+    <label for="package">Package:</label>
+    <select id="package" name="package">
+      <option value="">-- Select Package --</option>
+      <option value="Bronze">Bronze</option>
+      <option value="Silver">Silver</option>
+      <option value="Gold">Gold</option>
+      <option value="Platinum">Platinum</option>
+    </select>
+    <span id="packageError" class="error"></span>
+
+    <!-- Subscribe -->
+    <label>
+      <input type="checkbox" id="subscribe" name="subscribe">
+      Subscribe to newsletter
+    </label>
+    <span id="subscribeError" class="error"></span>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <!-- Confirmation page -->
+  <div id="result"></div>
+
+  <!-- =========================
+       JAVASCRIPT VALIDATION SECTION
+  ========================== -->
+  <script>
+    // Reference to form and result container
+    const form = document.getElementById('subscriptionForm');
+    const resultDiv = document.getElementById('result');
+
+    // ===== Helper Validation Functions (Arrow Functions) =====
+    const isAlpha = str => /^[A-Za-z]{2,}$/.test(str); // only letters, min 2 chars
+    const isValidEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isPackageSelected = pkg => pkg !== '';
+    const isSubscribed = checked => checked === true;
+
+    // ===== Main Form Submit Event =====
+    form.addEventListener('submit', e => {
+      e.preventDefault(); // Prevent form from reloading page
+
+      // Capture user input values
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const pkg = document.getElementById('package').value;
+      const subscribed = document.getElementById('subscribe').checked;
+
+      // Clear previous error messages
+      document.querySelectorAll('.error').forEach(span => span.textContent = '');
+
+      // ===== Validation Rules =====
+      const validations = [
+        { valid: isAlpha(firstName), field: 'firstNameError', msg: 'First name must be at least 2 letters (A-Z).' },
+        { valid: isAlpha(lastName), field: 'lastNameError', msg: 'Last name must be at least 2 letters (A-Z).' },
+        { valid: email === '' || isValidEmail(email), field: 'emailError', msg: 'Invalid email format.' },
+        { valid: isPackageSelected(pkg), field: 'packageError', msg: 'Please select a package.' },
+        { valid: isSubscribed(subscribed), field: 'subscribeError', msg: 'You must check this box to subscribe.' }
+      ];
+
+      // ===== Filter out invalid fields and show messages =====
+      const failed = validations.filter(v => !v.valid);
+      failed.map(v => {
+        // Only show the email error if user entered something invalid
+        if (v.field === 'emailError' && email === '') return;
+        document.getElementById(v.field).textContent = v.msg;
+      });
+
+      // ===== Success: all validations passed =====
+      if (failed.length === 0) {
+        form.style.display = 'none'; // hide the form
+        resultDiv.style.display = 'block'; // show the result area
+
+        // Display personalized confirmation message
+        resultDiv.innerHTML = `
+          <h3>Thank you, ${firstName} ${lastName}, for subscribing!</h3>
+          <p>Your email <strong>${email || '(no email provided)'}</strong> is registered with our <strong>${pkg}</strong> package.</p>
+        `;
+      }
+    });
+  </script>
+
+</body>
+</html>
