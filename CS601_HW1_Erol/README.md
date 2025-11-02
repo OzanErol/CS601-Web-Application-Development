@@ -1,8 +1,7 @@
-# CS601_HW1_LastName
 
 ## Description
 This project implements an interactive web form using **HTML5**, **CSS3**, and **JavaScript** only.  
-It includes form validation via JavaScript (no `required` attributes), DOM manipulation, and the use of arrow functions and higher-order functions (`map()`, `filter()`).
+
 
 ## Instructions
 1. Open `index.html` in your browser or use VS Code with the **Live Server** extension.
